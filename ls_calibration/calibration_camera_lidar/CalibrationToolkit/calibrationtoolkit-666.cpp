@@ -526,33 +526,17 @@ bool CalibrateCameraChessboardROS::grabCalibData()
         camerasub->startReceiveSlot();
         return 0;
     }
-    if(calibimage.type()==CV_8UC1)
-    {
-        cv::cornerSubPix(calibimage,grid2dpoint,cv::Size(11, 11), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-        calibimages.push_back(calibimage.clone());
-        grid3dpoints.push_back(grid3dpoint);
-        grid2dpoints.push_back(grid2dpoint);
+    cv::cornerSubPix(calibimage,grid2dpoint,cv::Size(11, 11), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+    calibimages.push_back(calibimage.clone());
+    grid3dpoints.push_back(grid3dpoint);
+    grid2dpoints.push_back(grid2dpoint);
 
-        chessboardposes.push_back(cv::Mat::eye(4,4,CV_64F));
-        QTableWidget * tmpchessboardtable=new QTableWidget;
-        chessboardposeshow->addTab(tmpchessboardtable,QString("Chessboard_%1").arg(calibimages.size()-1));
-    }
-    else if(calibimage.type()==CV_8UC3)
-    {
-        cv::cvtColor(calibimage, calibimage, CV_RGB2GRAY);
-        cv::cornerSubPix(calibimage,grid2dpoint,cv::Size(11, 11), cv::Size(-1, -1),cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-        calibimages.push_back(calibimage.clone());
-        grid3dpoints.push_back(grid3dpoint);
-        grid2dpoints.push_back(grid2dpoint);
+    chessboardposes.push_back(cv::Mat::eye(4,4,CV_64F));
+    QTableWidget * tmpchessboardtable=new QTableWidget;
+    chessboardposeshow->addTab(tmpchessboardtable,QString("Chessboard_%1").arg(calibimages.size()-1));
 
-        chessboardposes.push_back(cv::Mat::eye(4,4,CV_64F));
-        QTableWidget * tmpchessboardtable=new QTableWidget;
-        chessboardposeshow->addTab(tmpchessboardtable,QString("Chessboard_%1").arg(calibimages.size()-1));
-
-    }
-
-        cv::Mat tmpimage=calibimages.back().clone();
-        cv::drawChessboardCorners(tmpimage,patternnum,grid2dpoint,1);
+    cv::Mat tmpimage=calibimages.back().clone();
+    cv::drawChessboardCorners(tmpimage,patternnum,grid2dpoint,1);
     if(tmpimage.type()==CV_8UC3)
     {
         QImage img(tmpimage.data, tmpimage.cols, tmpimage.rows, tmpimage.step, QImage::Format_RGB888);
